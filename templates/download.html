@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Secure Download</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>🔓 Download File</h2>
+    <form action="/download_file" method="post">
+      <input type="hidden" name="filename" value="{{ filename }}">
+      <input type="password" name="password" placeholder="Enter file password" required>
+      <button type="submit">Decrypt & Download</button>
+    </form>
+  </div>
+</body>
+</html>

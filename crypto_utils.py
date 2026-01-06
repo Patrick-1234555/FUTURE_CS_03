@@ -1,20 +1,26 @@
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
-import os
-from dotenv import load_dotenv
+from Crypto.Protocol.KDF import PBKDF2
+import hashlib
 
-load_dotenv()
-KEY = os.getenv("SECRET_KEY").encode()
+def derive_key(password, salt):
+    return PBKDF2(password, salt, dkLen=32, count=200000)
 
-def encrypt_file(data):
+def hash_password(password, salt):
+    return hashlib.sha256(password.encode() + salt).hexdigest()
+
+def encrypt_file(data, password):
+    salt = get_random_bytes(16)
+    key = derive_key(password, salt)
     iv = get_random_bytes(16)
-    cipher = AES.new(KEY, AES.MODE_CBC, iv)
-    encrypted_data = cipher.encrypt(pad(data, AES.block_size))
-    return iv + encrypted_data
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    encrypted = cipher.encrypt(pad(data, AES.block_size))
+    return salt + iv + encrypted
 
-def decrypt_file(data):
-    iv = data[:16]
-    encrypted_data = data[16:]
-    cipher = AES.new(KEY, AES.MODE_CBC, iv)
+def decrypt_file(data, password, salt):
+    key = derive_key(password, salt)
+    iv = data[16:32]
+    encrypted_data = data[32:]
+    cipher = AES.new(key, AES.MODE_CBC, iv)
     return unpad(cipher.decrypt(encrypted_data), AES.block_size)

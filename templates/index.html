@@ -11,13 +11,13 @@
     <h2>🔐 Secure File Sharing</h2>
 
     <form action="/upload" method="post" enctype="multipart/form-data">
-      <div class="upload-box">
-        <p>Select a file to upload</p>
+    <div class="upload-box">
         <input type="file" name="file" required>
-      </div>
-
-      <button type="submit">Upload & Encrypt</button>
+        <input type="password" name="password" placeholder="Create file password" required>
+    </div>
+    <button type="submit">Upload & Encrypt</button>
     </form>
+
 
     <div class="info">
       <strong>Download:</strong><br>
