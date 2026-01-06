@@ -4,13 +4,14 @@ import os, json
 from io import BytesIO
 from base64 import b64encode, b64decode
 
-
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 META_FILE = "file_metadata.json"
 
+# Ensure upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Initialize metadata file if it doesn't exist
 if not os.path.exists(META_FILE):
     with open(META_FILE, "w") as f:
         json.dump({}, f)
