@@ -3,31 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <title>Secure File Sharing</title>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-  <div class="container">
-    <h2>🔐 Secure File Sharing</h2>
+<div class="container">
+<h2>Secure File Sharing</h2>
+
+<div class="dashboard">
+
+  <!-- Upload Card -->
+  <div class="card upload-card">
+    <h3>
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      Upload & Encrypt
+    </h3>
 
     <form action="/upload" method="post" enctype="multipart/form-data">
-    <div class="upload-box">
-        <input type="file" name="file" required>
-        <input type="password" name="password" placeholder="Create file password" required>
-    </div>
-    <button type="submit">Upload & Encrypt</button>
+      <input type="file" name="file" required>
+      <input type="password" name="password" placeholder="Create file password" required>
+      <button type="submit">Upload File</button>
     </form>
 
-
-    <div class="info">
-      <strong>Download:</strong><br>
-      Visit <code>/download/filename.ext</code> to retrieve your file securely.
-    </div>
-
-    <div class="footer">
-      AES-256 Encrypted • Secure Storage
-    </div>
+    <div class="divider"></div>
+    <p style="font-size:14px;color:#555;">
+      Files are encrypted using AES-256 before storage.
+    </p>
   </div>
+
+  <!-- Download Card -->
+  <div class="card download-card">
+    <h3>
+      <i class="fa-solid fa-cloud-arrow-down"></i>
+      Secure Download
+    </h3>
+
+    <input type="text" id="filename" placeholder="Enter filename">
+    <button onclick="openModal()">Download File</button>
+
+    <div class="divider"></div>
+    <p style="font-size:14px;color:#555;">
+      Password required to decrypt and download.
+    </p>
+  </div>
+
+</div>
+
+</div>
+
+
+<!-- Password Modal -->
+<div class="modal" id="passwordModal">
+  <div class="modal-content">
+    <h3><i class="fa-solid fa-lock"></i>Enter File Password</h3>
+    <span class="close-btn" onclick="closeModal()"></span>    
+    <input type="password" id="downloadPassword" placeholder="Password">
+    <button onclick="downloadFile()">Decrypt & Download</button>
+    <p class="modal-error" id="errorMsg"></p>
+  </div>
+</div>
+
+<script>
+function openModal() {
+  document.getElementById("passwordModal").style.display = "flex";
+}
+
+function downloadFile() {
+  const filename = document.getElementById("filename").value;
+  const password = document.getElementById("downloadPassword").value;
+
+  const formData = new FormData();
+  formData.append("filename", filename);
+  formData.append("password", password);
+
+  fetch("/download_file", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => {
+    if (!res.ok) throw res;
+    return res.blob();
+  })
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    closeModal();
+  })
+  .catch(async err => {
+    const data = await err.json();
+    document.getElementById("errorMsg").innerText = data.error;
+  });
+}
+
+function closeModal() {
+  document.getElementById("passwordModal").style.display = "none";
+  document.getElementById("downloadPassword").value = "";
+  document.getElementById("errorMsg").innerText = "";
+}
+document.getElementById("passwordModal").addEventListener("click", function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
+
+</script>
 
 </body>
 </html>

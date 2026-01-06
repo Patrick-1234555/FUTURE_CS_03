@@ -1,6 +1,14 @@
 {
   "Book1.xlsx": {
-    "password_hash": "924f181645eaf07aa130b9739360a65e1d5900f2557f30b795183b4aa2cfe533",
-    "salt": "LYnvcdil3F//1spYIe6mlQ=="
+    "password_hash": "47fab6556868111cb2a1351334ccd93af8ec7c04d1bf424d02d2c501e5c00596",
+    "salt": "9nHRco9SpIvI3yE+RXiOBg=="
+  },
+  "letter_Obald.pdf": {
+    "password_hash": "66b78365ef30d3a329102f32cb9a7f77cb2203d32f89276ae06eb7ef96eb55c5",
+    "salt": "/N3Xe1vsKt0qf++rXLxPqg=="
+  },
+  "12.pdf": {
+    "password_hash": "413fb4db2e62024d7d168e316e046c1ef6dc75e125bc24b780971fe16c4de0a4",
+    "salt": "Ia/4ZA6Ns7Fq0xVAbDAm+A=="
   }
 }

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, render_template, request, send_file, redirect, url_for, jsonify
 from crypto_utils import encrypt_file, decrypt_file, hash_password
 import os, json
 from io import BytesIO
 from base64 import b64encode, b64decode
+
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
@@ -39,7 +40,7 @@ def upload():
 
     json.dump(metadata, open(META_FILE, "w"), indent=2)
 
-    return redirect(url_for("download_page", filename=file.filename))
+    return redirect(url_for("index", filename=file.filename))
 
 @app.route("/download/<filename>")
 def download_page(filename):
@@ -54,11 +55,11 @@ def download_file():
     file_info = metadata.get(filename)
 
     if not file_info:
-        return "File not found"
+        return jsonify({"error": "File not found"}), 404
 
     salt = b64decode(file_info["salt"])
     if hash_password(password, salt) != file_info["password_hash"]:
-        return "Incorrect password"
+        return jsonify({"error": "Incorrect password"}), 401
 
     with open(os.path.join(UPLOAD_FOLDER, filename), "rb") as f:
         encrypted = f.read()
@@ -70,6 +71,7 @@ def download_file():
         download_name=filename,
         as_attachment=True
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
